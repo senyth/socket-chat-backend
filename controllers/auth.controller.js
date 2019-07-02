@@ -10,7 +10,6 @@ _this = this
 
 exports.authenticate = async function(req, res, next) {
     try {
-        console.log(JSON.stringify(req.body.credentials));
         let user = {'username': req.body.credentials.username, 'password': req.body.credentials.password};
         const userExists = await AuthService.checkUserIfExists({username: req.body.credentials.username});
         let ret;
@@ -56,9 +55,6 @@ register = async function(req) {
         var user = await AuthService.register(account);
         return user;
     } catch(e) {
-        console.log('register error');
         console.log(e);
-    } finally {
-
     }
 }

@@ -21,7 +21,7 @@ mongoose.connect(dbConnection, { useNewUrlParser: true });
 
 // CONNECTION EVENTS
 mongoose.connection.on('connected', () => {
-    console.log('Connected to ' + dbName + ' database ..');
+    console.log('Connected to ' + dbName + ' database...');
   }).on('disconnected', () => {
     console.log('Connection disconnected!');
   }).on('reconnected', () => {
@@ -48,7 +48,7 @@ app.use('/api', apis);
 
 app.listen(port, (err) => { 
     if(err) {
-        console.log("Error connecting to port" + err);
+        console.log("Error connecting to port. " + err);
     } else {
         console.log('Running on port ' + port);
     }
