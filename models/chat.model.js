@@ -13,7 +13,7 @@ var ChatSchema = new mongoose.Schema({
         ref: 'users'
     },
     message: String,
-    timestamp: Date,
+    reg_datetime: Date,
     dis: Boolean
 },  {strict: true})
 
