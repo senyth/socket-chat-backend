@@ -15,12 +15,8 @@ exports.checkUserIfExists = async function(query) {
                 .and({'dis': true})
                 .limit(1);
 
-                console.log('checkIfUserExists');
-
             let isExists = user.length > 0 ? true : false;
-            console.log(user.length);
-
-        return isExists;
+            return isExists;
     } catch (e) {
         throw e.error
     }
@@ -62,8 +58,6 @@ async function generateToken(user) {
 }
 
 exports.register = async function(user) {
-    console.log('user details');
-    console.log(user);
     var newUser = new User(user);
 
     try {     
@@ -71,9 +65,6 @@ exports.register = async function(user) {
 
         return savedUser;
     } catch (e) {
-        console.log('register service error');
-        console.log(e.message);
-        console.log(e.error);
-        throw e
+        throw e.error;
     }
 }
