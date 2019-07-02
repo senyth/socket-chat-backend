@@ -4,7 +4,8 @@
  * Developer:     Babie Entoma
  * Date:          06/28/2019
  */
-var AuthService = require('../services/auth.service')
+var AuthService = require('../services/auth.service');
+var socketMVC = require('socket.mvc');
 
 _this = this
 
@@ -42,6 +43,7 @@ login = async function(user, res) {
         else {
             message = "Invalid login credentials";
         }
+        socketMVC.emit('logged in');
         return {status: 200, data: user, message: message};    
     } catch(e) {       
         return res.status(400).json({status: 400, message: e.message});        

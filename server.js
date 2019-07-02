@@ -4,6 +4,9 @@ let bluebird = require('bluebird');
 let bodyParser = require('body-parser');
 let cors = require('cors');
 let path = require('path');
+// let client = require('socket.io').listen(4000).sockets;
+// let io = require('socket.io').listen(4000);
+let socketMVC = require('socket.mvc');
 
 const app = express();
 let config = require('./config');
@@ -22,6 +25,42 @@ mongoose.connect(dbConnection, { useNewUrlParser: true });
 // CONNECTION EVENTS
 mongoose.connection.on('connected', () => {
     console.log('Connected to ' + dbName + ' database...');
+
+    // connect to socket.io
+    // client.on('connection', function(socket) {
+    //   let chat = dbName.collection('chats');
+
+    //   sendStatus = function(status) {
+    //     socket.emit('status', status);
+    //   }
+  
+    //   chat.find().limit(100).sort({_id: 1}).toArray(function(err, res) {
+    //     if (err) {
+    //       throw err;
+    //     }
+  
+    //     socket.emit('output', res);
+    //   });
+  
+    //   socket.on('input'), function(data) {
+    //     let name = data.name;
+    //     let message = data.message;
+  
+    //     if (name == '' || message == '') {
+    //       // send error status
+    //       sendStatus('Please enter a name and message');
+    //     } else {
+    //       chat.insert({name: name, message: message}, function() {
+    //         client.emit('output', [data]);
+  
+    //         sendStatus({message: 'Message sent', clear: true});
+    //       });
+    //     }
+    //   }
+    // });
+
+    
+
   }).on('disconnected', () => {
     console.log('Connection disconnected!');
   }).on('reconnected', () => {
@@ -46,12 +85,23 @@ app.use(cors({
 
 app.use('/api', apis);
 
-app.listen(port, (err) => { 
+var server = app.listen(port, (err) => { 
     if(err) {
         console.log("Error connecting to port. " + err);
     } else {
         console.log('Running on port ' + port);
     }
 });
+
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function (socket) {
+  socketMVC.init(io, socket, {
+      debug: true,
+      filePath: ['./routes/api/socket.js']
+  });
+});
+
+
 
 // app.listen(3000, () => console.log(`Express server running on port 3000`));
