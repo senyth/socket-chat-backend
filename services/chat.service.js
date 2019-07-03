@@ -20,20 +20,15 @@ exports.insertChat = async function(chat) {
         var savedChat = newChat.save();
         return savedChat;
     } catch (e) {
-        throw Error(e)
+        throw Error(e);
     }
 }
 
-exports.getAllChats = async function(query) {
-    var options = {
-        dis: true,
-        sort: {reg_datetime: -1}
-    }
-
+exports.getAllChats = async function() {
     try {     
-       var chats = await Chat.find(query, options);
+       var chats = await Chat.find({ dis: true }).sort({ timestamp: 1 });
         return chats;
     } catch (e) {
-        throw e.error
+        throw Error(e);
     }
 }

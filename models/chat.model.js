@@ -8,7 +8,7 @@
 var mongoose = require('mongoose');
 
 var ChatSchema = new mongoose.Schema({
-    customer_id: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },

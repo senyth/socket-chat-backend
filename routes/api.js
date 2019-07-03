@@ -8,6 +8,7 @@ var auth_guard = require('../middlewares/auth_guard');
 
 router.use('/auth', auth);
 // router.use('/users', auth_guard, users)
-router.use('/chats', auth_guard, chats)
+// router.use('/chats', auth_guard, chats)
+router.use('/chats', chats);
 
 module.exports = router;
