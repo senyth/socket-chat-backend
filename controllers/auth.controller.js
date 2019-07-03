@@ -10,12 +10,19 @@ var socketMVC = require('socket.mvc');
 _this = this
 
 exports.authenticate = async function(req, res, next) {
+
     try {
+        console.log('username: ' + req.body.credentials.username);
+        console.log('password: ' + req.body.credentials.password);
         let user = {'username': req.body.credentials.username, 'password': req.body.credentials.password};
         const userExists = await AuthService.checkUserIfExists({username: req.body.credentials.username});
         let ret;
 
+        console.log('userExists');
+        console.log(userExists);
+
         if (userExists) {
+            console.log('true');
             ret = await login(user, res); // user already exists
         }
         else {
@@ -23,7 +30,9 @@ exports.authenticate = async function(req, res, next) {
             ret = await login(user, res);
         }
 
-        return res.status(200).json({status: ret.status, data: ret.data, message: ret.message});
+        console.log(ret);
+
+        return res.status(200).json({status: ret.status, data: ret.data, message: ret.message, success: true});
                 
     } catch(e){       
         return res.status(400).json({status: 400, message: e.message});        

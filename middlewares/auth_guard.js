@@ -12,7 +12,6 @@ const RSA_PUBLIC_KEY = fs.readFileSync(path.dirname(require.main.filename) + '/s
 
 module.exports = (req,res, next) => {
     var header = req.body.token || req.query.token || req.headers['Authorization'] || req.headers['authorization'];
-
     if (header) {
         var parts = header.split(' ');
         var token = parts[1];

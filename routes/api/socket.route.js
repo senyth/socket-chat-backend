@@ -10,6 +10,7 @@ module.exports = function (socket) {
     });
 
     socket.on('message', async function(data) {
+        console.log('new message');
         await ChatController.insertChat(data);
     });
 };
