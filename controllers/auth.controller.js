@@ -22,11 +22,11 @@ exports.authenticate = async function(req, res, next) {
 
         if (userExists) {
             console.log('true');
-            ret = await login(user, res, 0); // user already exists
+            ret = await login(user, res); // user already exists
         }
         else {
-            user = await register(user);
-            ret = await login(user, res, 1);
+            await register(user);
+            ret = await login(user, res);
         }
 
         return res.status(200).json({status: ret.status, data: ret.data, message: ret.message, success: true});
@@ -36,12 +36,12 @@ exports.authenticate = async function(req, res, next) {
     }
 }
 
-login = async function(user, res, hashedPw) {
+login = async function(user, res) {
     try {
         var user = await AuthService.login({   
                                         'username': user.username, 
                                         'password': user.password
-                                    }, hashedPw);
+                                    });
 
         if (user.user && user.token) {
             message = "Succesfully authenticated user";
@@ -59,8 +59,7 @@ login = async function(user, res, hashedPw) {
 register = async function(req) {
     try {
         let account = { 'username': req.username, 'password': req.password,  'dis': true };
-        var user = await AuthService.register(account);
-        return user;
+        await AuthService.register(account);
     } catch(e) {
         console.log(e);
     }

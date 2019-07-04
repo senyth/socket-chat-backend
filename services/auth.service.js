@@ -23,40 +23,33 @@ exports.checkUserIfExists = async function(query) {
     }
 }
 
-exports.login = async function(query, hashedPw) {
+exports.login = async function(query) {
     try {
         var user = await User.findOne({username: query.username});
         let res = {};
         let token = {};
+        let result = false;
 
         if (user) {
-
-            let result = false;
-
-            if (!hashedPw) {
-                result = bcrypt.compareSync(query.password, user.password);
-            } else {
-                result = query.password === user.password ? true : false;
-            }
-
-            if (result) {
-                let expiry = '1d';
-                const issuer = 'chat-app';
-                const authorizedUser = {
-                    _id: user.id,
-                    username: user.username
-                }
-                const jwtBearerToken = await generateToken(authorizedUser, expiry, issuer);
-
-                res = { user: authorizedUser, token: jwtBearerToken, success: true };
-            } else {
-                res = { user: {}, token: token, success: false };
-            }
+            result = bcrypt.compareSync(query.password, user.password);
         }
-        else {
-            // invalid credentials
-            res = { user: user, token: token, success: false };
+
+        console.log('result of bcrypt: ' + result);
+
+        if (user && result) {
+            let expiry = '1d';
+            const issuer = 'chat-app';
+            const authorizedUser = {
+                _id: user.id,
+                username: user.username
+            }
+            const jwtBearerToken = await generateToken(authorizedUser, expiry, issuer);
+
+            res = { user: authorizedUser, token: jwtBearerToken, success: true };
+        } else {
+            res = { user: null, token: null, success: false };
         }
+            
         return res;
         
     } catch (e) {
@@ -86,7 +79,7 @@ async function generateToken(user, expiry, issuer) {
 exports.register = async function(user) {
     user.password = bcrypt.hashSync(user.password, 10);
     var newUser = new User(user);
-    
+
     try {     
         var savedUser = await newUser.save();
 
