@@ -29,7 +29,10 @@ exports.login = async function(query) {
         let token = {};
 
         if (user) {
-            const jwtBearerToken = await generateToken(user);
+            let expiry = '1d';
+            const issuer = 'chat-app';
+            const jwtBearerToken = await generateToken(user, expiry, issuer);
+
             res = { user: user, token: jwtBearerToken, success: true };
         }
         else {
@@ -43,17 +46,20 @@ exports.login = async function(query) {
     }
 }
 
-async function generateToken(user) {
+async function generateToken(user, expiry, issuer) {
     try {
-    const RSA_PRIVATE_KEY = fs.readFileSync(__dirname + '/config/private.key');
-    const jwtBearerToken = jwt.sign(user.toJSON(), RSA_PRIVATE_KEY, {
-        algorithm: 'RS256',
-        subject: JSON.stringify(user._id)
-    });
+        const RSA_PRIVATE_KEY = await fs.readFileSync(__dirname + '/config/private.key');
+        const jwtBearerToken = await jwt.sign(JSON.parse(JSON.stringify(user)), RSA_PRIVATE_KEY, {
+            algorithm: 'RS256',
+            expiresIn: expiry,
+            subject: JSON.stringify(user._id),
+            issuer: issuer
+        });
 
     return jwtBearerToken;
-    } catch(e) {
-        throw e.error
+    } catch (e) {
+        console.log(e);
+        throw e;
     }
 }
 
