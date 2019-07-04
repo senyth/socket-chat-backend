@@ -1,6 +1,7 @@
 var User = require('../models/user.model');
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
+const bcrypt = require('bcrypt');
 
 /**
  * Returns data if username already exists in database
@@ -22,18 +23,35 @@ exports.checkUserIfExists = async function(query) {
     }
 }
 
-exports.login = async function(query) {
+exports.login = async function(query, hashedPw) {
     try {
-        var user = await User.findOne(query).select('-password');
+        var user = await User.findOne({username: query.username});
         let res = {};
         let token = {};
 
         if (user) {
-            let expiry = '1d';
-            const issuer = 'chat-app';
-            const jwtBearerToken = await generateToken(user, expiry, issuer);
 
-            res = { user: user, token: jwtBearerToken, success: true };
+            let result = false;
+
+            if (!hashedPw) {
+                result = bcrypt.compareSync(query.password, user.password);
+            } else {
+                result = query.password === user.password ? true : false;
+            }
+
+            if (result) {
+                let expiry = '1d';
+                const issuer = 'chat-app';
+                const authorizedUser = {
+                    _id: user.id,
+                    username: user.username
+                }
+                const jwtBearerToken = await generateToken(authorizedUser, expiry, issuer);
+
+                res = { user: authorizedUser, token: jwtBearerToken, success: true };
+            } else {
+                res = { user: {}, token: token, success: false };
+            }
         }
         else {
             // invalid credentials
@@ -42,6 +60,8 @@ exports.login = async function(query) {
         return res;
         
     } catch (e) {
+        console.log('login service error');
+        console.log(e);
         throw e.error
     }
 }
@@ -64,8 +84,9 @@ async function generateToken(user, expiry, issuer) {
 }
 
 exports.register = async function(user) {
+    user.password = bcrypt.hashSync(user.password, 10);
     var newUser = new User(user);
-
+    
     try {     
         var savedUser = await newUser.save();
 
@@ -73,4 +94,4 @@ exports.register = async function(user) {
     } catch (e) {
         throw e.error;
     }
-}
+}   
