@@ -29,9 +29,14 @@ exports.authenticate = async function(req, res, next) {
             ret = await login(user, res);
         }
 
+        console.log('ret controller');
+        console.log(ret);
+
         return res.status(200).json({status: ret.status, data: ret.data, message: ret.message, success: true});
                 
-    } catch(e){       
+    } catch(e){ 
+        console.log('authenticate controller error');
+        console.log(e);      
         return res.status(400).json({status: 400, message: e.message});        
     }
 }

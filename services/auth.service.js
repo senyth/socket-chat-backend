@@ -47,8 +47,12 @@ exports.login = async function(query) {
 
             res = { user: authorizedUser, token: jwtBearerToken, success: true };
         } else {
+            console.log('invalid credentials');
             res = { user: null, token: null, success: false };
         }
+        
+        console.log('res');
+        console.log(res);
             
         return res;
         
