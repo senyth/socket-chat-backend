@@ -6,11 +6,12 @@
  */
 
 var mongoose = require('mongoose');
+var user = require('../models/user.model');
 
 var ChatSchema = new mongoose.Schema({
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'user'
     },
     message: String,
     timestamp: Date,

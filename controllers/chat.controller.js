@@ -15,7 +15,8 @@ exports.insertChat = async function(chat) {
         console.log(chat);
         var newChat = await ChatService.insertChat(chat);
         if (newChat) { // chat is successfully inserted to database
-            socketMVC.everyone('new message', newChat);
+            var populatedChat = await ChatService.getChat(newChat._id);
+            socketMVC.everyone('new message', populatedChat);
         }
     } catch (e) {
         return res.status(400).json({status: 400, message: e.message});
