@@ -4,9 +4,7 @@
  * Developer:     Babie Entoma
  * Date:          07/02/2019
  */
-
 var mongoose = require('mongoose');
-var user = require('../models/user.model');
 
 var ChatSchema = new mongoose.Schema({
     user: {

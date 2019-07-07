@@ -4,18 +4,17 @@
  * Developer:     Babie Entoma
  * Date:          06/28/2019
  */
-var ChatService = require('../services/chat.service');
-var socketMVC = require('socket.mvc');
+const ChatService = require('../services/chat.service');
+const socketMVC = require('socket.mvc');
 
 _this = this
 
 exports.insertChat = async function(chat) {
     try {
-        console.log('insert chat');
-        console.log(chat);
-        var newChat = await ChatService.insertChat(chat);
+        const newChat = await ChatService.insertChat(chat);
+
         if (newChat) { // chat is successfully inserted to database
-            var populatedChat = await ChatService.getChat(newChat._id);
+            const populatedChat = await ChatService.getChat(newChat._id); // populates the user info of the chat and send to front-end
             socketMVC.everyone('new message', populatedChat);
         }
     } catch (e) {
@@ -25,7 +24,7 @@ exports.insertChat = async function(chat) {
 
 exports.getAllChats = async function(req, res, next) {
     try {
-        var chats = await ChatService.getAllChats();
+        const chats = await ChatService.getAllChats();
         return res.status(200).json({status: 200, data: chats, message: "Succesfully fetched all chats", success: true});
     } catch(e){
         console.log(e);

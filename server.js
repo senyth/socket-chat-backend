@@ -1,11 +1,15 @@
+/**
+ * Name:          Server.js
+ * Description:   Starting point of the application
+ * Developer:     Babie Entoma
+ * Date:          06/28/2019
+ */
 let express = require('express');
 let mongoose = require('mongoose');
 let bluebird = require('bluebird');
 let bodyParser = require('body-parser');
 let cors = require('cors');
 let path = require('path');
-// let client = require('socket.io').listen(4000).sockets;
-// let io = require('socket.io').listen(4000);
 let socketMVC = require('socket.mvc');
 
 const app = express();
@@ -19,6 +23,7 @@ let dbConnection = dbuser ? `mongodb://${dbuser}:${dbpass}@${host}:${dbport}/${d
 
 // set promise
 mongoose.Promise = bluebird;
+
 // initialize mongodb
 mongoose.connect(dbConnection, { useNewUrlParser: true });
 
@@ -48,7 +53,7 @@ app.use(cors({
 
 app.use('/api', apis);
 
-var server = app.listen(port, (err) => { 
+const server = app.listen(port, (err) => { 
     if(err) {
         console.log("Error connecting to port. " + err);
     } else {
@@ -56,7 +61,7 @@ var server = app.listen(port, (err) => {
     }
 });
 
-var io = require('socket.io').listen(server);
+const io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function (socket) {
   socketMVC.init(io, socket, {

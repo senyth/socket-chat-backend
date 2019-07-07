@@ -5,37 +5,26 @@
  * Date:          06/28/2019
  */
 var AuthService = require('../services/auth.service');
-var socketMVC = require('socket.mvc');
 
 _this = this
 
 exports.authenticate = async function(req, res, next) {
 
     try {
-        console.log('username: ' + req.body.credentials.username);
-        console.log('password: ' + req.body.credentials.password);
         let user = {'username': req.body.credentials.username, 'password': req.body.credentials.password};
         const userExists = await AuthService.checkUserIfExists({username: req.body.credentials.username});
         let ret;
 
-        console.log('userExists');
-
         if (userExists) {
-            console.log('true');
             ret = await login(user, res); // user already exists
         }
-        else {
+        else { // if user doesn't exist, register user and perform login
             await register(user);
             ret = await login(user, res);
         }
 
-        console.log('ret controller');
-        console.log(ret);
-
-        return res.status(200).json({status: ret.status, data: ret.data, message: ret.message, success: true});
-                
+        return res.status(200).json({status: ret.status, data: ret.data, message: ret.message, success: true});             
     } catch(e){ 
-        console.log('authenticate controller error');
         console.log(e);      
         return res.status(400).json({status: 400, message: e.message});        
     }

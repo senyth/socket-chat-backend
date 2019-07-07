@@ -1,16 +1,24 @@
-// let io = require('../../server');
-var socketMVC = require('socket.mvc');
-var ChatController = require('../../controllers/chat.controller');
+/**
+ * Name:          Socket Route
+ * Description:   Holds all the routes related to sockets
+ * Developer:     Babie Entoma
+ * Date:          07/01/2019
+ */
+const socketMVC = require('socket.mvc');
+const ChatController = require('../../controllers/chat.controller');
 
 module.exports = function (socket) {
-    //You can declare all of your socket listeners in this file, but it's not required
- 
-    socket.on('login', function() {
-        console.log('logged in')
-    });
 
     socket.on('message', async function(data) {
         console.log('new message');
         await ChatController.insertChat(data);
     });
+
+    socket.on('typing', (data) => {
+        
+        console.log('typing from socket.route');
+        console.log(data);
+        socketMVC.everyone('typing',  {user: data.user, isTyping: data.isTyping});
+    });
+
 };

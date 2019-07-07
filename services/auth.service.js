@@ -1,18 +1,23 @@
-var User = require('../models/user.model');
-var jwt = require('jsonwebtoken');
-var fs = require('fs');
+/**
+ * Name:          Auth Service
+ * Description:   Holds the functions to perform all queries related to the authentication of user
+ * Developer:     Babie Entoma
+ * Date:          06/28/2019
+ */
+const User = require('../models/user.model');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
 
 /**
  * Returns data if username already exists in database
  * @param         query
  * @return        User - contains the user
- * Developer:     Babie Entoma
- * Date:          06/28/2019
+ * @author        Babie Entoma
  */
 exports.checkUserIfExists = async function(query) {
     try {     
-            var user = await User.find().where('username').eq(query.username)
+            const user = await User.find().where('username').eq(query.username)
                 .and({'dis': true})
                 .limit(1);
 
@@ -23,6 +28,12 @@ exports.checkUserIfExists = async function(query) {
     }
 }
 
+/**
+ * Use to authenticate the login request
+ * @param         query
+ * @return        Returns the valid user, token and success value if authenticated. Returns empty user and token and success false value if invalid
+ * @author        Babie Entoma
+ */
 exports.login = async function(query) {
     try {
         var user = await User.findOne({username: query.username});
@@ -31,10 +42,8 @@ exports.login = async function(query) {
         let result = false;
 
         if (user) {
-            result = bcrypt.compareSync(query.password, user.password);
+            result = bcrypt.compareSync(query.password, user.password); // check if password matches
         }
-
-        console.log('result of bcrypt: ' + result);
 
         if (user && result) {
             let expiry = '1d';
@@ -47,15 +56,10 @@ exports.login = async function(query) {
 
             res = { user: authorizedUser, token: jwtBearerToken, success: true };
         } else {
-            console.log('invalid credentials');
             res = { user: null, token: null, success: false };
         }
-        
-        console.log('res');
-        console.log(res);
-            
-        return res;
-        
+ 
+        return res;        
     } catch (e) {
         console.log('login service error');
         console.log(e);
@@ -63,6 +67,12 @@ exports.login = async function(query) {
     }
 }
 
+/**
+ * Generates unique token for each authenticated user
+ * @param        user, expiry, issuer
+ * @return       Returns the token
+ * @author       Babie Entoma
+ */
 async function generateToken(user, expiry, issuer) {
     try {
         const RSA_PRIVATE_KEY = await fs.readFileSync(__dirname + '/config/private.key');
@@ -80,7 +90,14 @@ async function generateToken(user, expiry, issuer) {
     }
 }
 
+/**
+ * Insert new user to the database
+ * @param         query
+ * @return        new user
+ * @author        Babie Entoma
+ */
 exports.register = async function(user) {
+    // encrypt password before saving to database
     user.password = bcrypt.hashSync(user.password, 10);
     var newUser = new User(user);
 

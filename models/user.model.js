@@ -4,7 +4,6 @@
  * Developer:     Babie Entoma
  * Date:          06/29/2019
  */
-
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
